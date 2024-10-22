@@ -4,7 +4,6 @@ public class Operation {
 
     private Long operationID;
     private String operationType;
-
     public Long getOperationID() {
         return operationID;
     }
