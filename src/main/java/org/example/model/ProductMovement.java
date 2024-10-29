@@ -58,4 +58,16 @@ public class ProductMovement {
     public void setDate(Date date) {
         this.date = date;
     }
+
+    @Override
+    public String toString() {
+        return "ProductMovement{" +
+                "movementID=" + movementID +
+                ", productID=" + productID +
+                ", warehouseID=" + warehouseID +
+                ", operationID=" + operationID +
+                ", quantity=" + quantity +
+                ", date=" + date +
+                '}';
+    }
 }

@@ -12,12 +12,12 @@ public class UserDAO {
         String sql = "INSERT INTO users (name, login, password) VALUES (?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
 
-            statement.setString(1, user.getName());
-            statement.setString(2, user.getLogin());
-            statement.setString(3, user.getPassword());
-            statement.executeUpdate();
+            stmt.setString(1, user.getName());
+            stmt.setString(2, user.getLogin());
+            stmt.setString(3, user.getPassword());
+            stmt.executeUpdate();
         }
     }
 

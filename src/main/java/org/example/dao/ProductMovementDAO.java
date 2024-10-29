@@ -9,91 +9,92 @@ import java.util.List;
 public class ProductMovementDAO {
 
     public void createProductMovement(ProductMovement movement) throws SQLException {
-        String sql = "INSERT INTO productmovement (productID, warehouseID, operationID, quantity, date) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO ProductMovement (productID, warehouseID, operationID, quantity, date) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+            stmt.setLong(1, movement.getProductID());
+            stmt.setLong(2, movement.getWarehouseID());
+            stmt.setLong(3, movement.getOperationID());
+            stmt.setDouble(4, movement.getQuantity());
+            stmt.setDate(5, new java.sql.Date(movement.getDate().getTime()));
 
-            statement.setLong(1, movement.getProductID());
-            statement.setLong(2, movement.getWarehouseID());
-            statement.setLong(3, movement.getOperationID());
-            statement.setDouble(4, movement.getQuantity());
-            statement.setDate(5, new java.sql.Date(movement.getDate().getTime()));
-            statement.executeUpdate();
-        }
-    }
-
-    public ProductMovement getProductMovementById(Long id) throws SQLException {
-        String sql = "SELECT * FROM productmovement WHERE movementID = ?";
-        ProductMovement movement = null;
-
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setLong(1, id);
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                movement = new ProductMovement();
-                movement.setMovementID(resultSet.getLong("movementID"));
-                movement.setProductID(resultSet.getLong("productID"));
-                movement.setWarehouseID(resultSet.getLong("warehouseID"));
-                movement.setOperationID(resultSet.getLong("operationID"));
-                movement.setQuantity(resultSet.getInt("quantity"));
-                movement.setDate(resultSet.getDate("date"));
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        movement.setMovementID(generatedKeys.getLong(1));
+                    }
+                }
             }
         }
-
-        return movement;
     }
+    public ProductMovement getProductMovementById(Long movementId) throws SQLException {
+        String query = "SELECT * FROM ProductMovement WHERE movementID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-    public List<ProductMovement> getAllProductMovements() throws SQLException {
-        String sql = "SELECT * FROM productmovement";
-        List<ProductMovement> movements = new ArrayList<>();
-
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet resultSet = statement.executeQuery()) {
-
-            while (resultSet.next()) {
-                ProductMovement movement = new ProductMovement();
-                movement.setMovementID(resultSet.getLong("movementID"));
-                movement.setProductID(resultSet.getLong("productID"));
-                movement.setWarehouseID(resultSet.getLong("warehouseID"));
-                movement.setOperationID(resultSet.getLong("operationID"));
-                movement.setQuantity(resultSet.getInt("quantity"));
-                movement.setDate(resultSet.getDate("date"));
-                movements.add(movement);
+            stmt.setLong(1, movementId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    ProductMovement movement = new ProductMovement();
+                    movement.setMovementID(rs.getLong("movementID"));
+                    movement.setProductID(rs.getLong("productID"));
+                    movement.setWarehouseID(rs.getLong("warehouseID"));
+                    movement.setOperationID(rs.getLong("operationID"));
+                    movement.setQuantity(rs.getLong("quantity"));
+                    movement.setDate(rs.getDate("date"));
+                    return movement;
+                }
             }
         }
-
-        return movements;
+        return null;
     }
 
     public void updateProductMovement(ProductMovement movement) throws SQLException {
-        String sql = "UPDATE productmovement SET productID = ?, warehouseID = ?, operationID = ?, quantity = ?, date = ? WHERE movementID = ?";
+        String query = "UPDATE ProductMovement SET productID = ?, warehouseID = ?, operationID = ?, quantity = ?, date = ? WHERE movementID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+            stmt.setLong(1, movement.getProductID());
+            stmt.setLong(2, movement.getWarehouseID());
+            stmt.setLong(3, movement.getOperationID());
+            stmt.setDouble(4, movement.getQuantity());
+            stmt.setDate(5, new java.sql.Date(movement.getDate().getTime()));
+            stmt.setLong(6, movement.getMovementID());
 
-            statement.setLong(1, movement.getProductID());
-            statement.setLong(2, movement.getWarehouseID());
-            statement.setLong(3, movement.getOperationID());
-            statement.setDouble(4, movement.getQuantity());
-            statement.setDate(5, new java.sql.Date(movement.getDate().getTime()));
-            statement.setLong(6, movement.getMovementID());
-            statement.executeUpdate();
+            stmt.executeUpdate();
         }
     }
 
-    public void deleteProductMovement(Long id) throws SQLException {
-        String sql = "DELETE FROM productmovement WHERE movementID = ?";
+    public void deleteProductMovement(Long movementId) throws SQLException {
+        String query = "DELETE FROM ProductMovement WHERE movementID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setLong(1, id);
-            statement.executeUpdate();
+            stmt.setLong(1, movementId);
+            stmt.executeUpdate();
         }
+    }
+
+    public List<ProductMovement> getAllProductMovements() throws SQLException {
+        String query = "SELECT * FROM ProductMovement";
+        List<ProductMovement> movements = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
+                ProductMovement movement = new ProductMovement();
+                movement.setMovementID(rs.getLong("movementID"));
+                movement.setProductID(rs.getLong("productID"));
+                movement.setWarehouseID(rs.getLong("warehouseID"));
+                movement.setOperationID(rs.getLong("operationID"));
+                movement.setQuantity(rs.getDouble("quantity"));
+                movement.setDate(rs.getDate("date"));
+                movements.add(movement);
+            }
+        }
+        return movements;
     }
 }

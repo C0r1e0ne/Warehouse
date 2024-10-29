@@ -3,7 +3,15 @@ package org.example.model;
 public class Operation {
 
     private Long operationID;
-    private String operationType;
+
+    public enum OperationType {
+        списание,
+        приход,
+        выдача
+    }
+
+    private OperationType operationType;
+
     public Long getOperationID() {
         return operationID;
     }
@@ -12,11 +20,19 @@ public class Operation {
         this.operationID = operationID;
     }
 
-    public String getOperationType() {
+    public OperationType getOperationType() {
         return operationType;
     }
 
-    public void setOperationType(String operationType) {
+    public void setOperationType(OperationType operationType) {
         this.operationType = operationType;
+    }
+
+    @Override
+    public String toString() {
+        return "Operation{" +
+                "operationID=" + operationID +
+                ", operationType=" + operationType +
+                '}';
     }
 }

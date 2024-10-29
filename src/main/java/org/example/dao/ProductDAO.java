@@ -12,17 +12,30 @@ public class ProductDAO {
         String sql = "INSERT INTO product (name, price, quantity) VALUES (?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+             PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            statement.setString(1, product.getName());
-            statement.setDouble(2, product.getPrice());
-            statement.setDouble(3, product.getQuantity());
-            statement.executeUpdate();
+            stmt.setString(1, product.getName());
+            stmt.setDouble(2, product.getPrice());
+            stmt.setDouble(3, product.getQuantity());
+
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        product.setProductID(generatedKeys.getLong(1));
+                    } else {
+                        throw new SQLException("Создание продукта завершилось неудачно, ID не был получен.");
+                    }
+                }
+            } else {
+                throw new SQLException("Создание продукта завершилось неудачно, ни одна строка не была затронута.");
+            }
         }
     }
 
     public Product getProductById(Long id) throws SQLException {
-        String sql = "SELECT * FROM product WHERE productID = ?";
+        String sql = "SELECT * FROM product WHERE productid = ?";
         Product product = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -33,10 +46,10 @@ public class ProductDAO {
 
             if (resultSet.next()) {
                 product = new Product();
-                product.setProductID(resultSet.getLong("productID"));
+                product.setProductID(resultSet.getLong("productid"));
                 product.setName(resultSet.getString("name"));
-                product.setPrice(resultSet.getInt("price"));
-                product.setQuantity(resultSet.getInt("quantity"));
+                product.setPrice(resultSet.getDouble("price"));
+                product.setQuantity(resultSet.getDouble("quantity"));
             }
         }
 
@@ -53,10 +66,10 @@ public class ProductDAO {
 
             while (resultSet.next()) {
                 Product product = new Product();
-                product.setProductID(resultSet.getLong("productID"));
+                product.setProductID(resultSet.getLong("productid"));
                 product.setName(resultSet.getString("name"));
-                product.setPrice(resultSet.getInt("price"));
-                product.setQuantity(resultSet.getInt("quantity"));
+                product.setPrice(resultSet.getDouble("price"));
+                product.setQuantity(resultSet.getDouble("quantity"));
                 products.add(product);
             }
         }
@@ -65,7 +78,7 @@ public class ProductDAO {
     }
 
     public void updateProduct(Product product) throws SQLException {
-        String sql = "UPDATE product SET name = ?, price = ?, quantity = ? WHERE productID = ?";
+        String sql = "UPDATE product SET name = ?, price = ?, quantity = ? WHERE productid = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -74,17 +87,19 @@ public class ProductDAO {
             statement.setDouble(2, product.getPrice());
             statement.setDouble(3, product.getQuantity());
             statement.setLong(4, product.getProductID());
+
             statement.executeUpdate();
         }
     }
 
     public void deleteProduct(Long id) throws SQLException {
-        String sql = "DELETE FROM product WHERE productID = ?";
+        String sql = "DELETE FROM product WHERE productid = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setLong(1, id);
+
             statement.executeUpdate();
         }
     }

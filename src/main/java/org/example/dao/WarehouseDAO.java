@@ -9,79 +9,81 @@ import java.util.List;
 public class WarehouseDAO {
 
     public void createWarehouse(Warehouse warehouse) throws SQLException {
-        String sql = "INSERT INTO warehouse (name, location) VALUES (?, ?)";
+        String query = "INSERT INTO Warehouse (name, location) VALUES (?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+            stmt.setString(1, warehouse.getName());
+            stmt.setString(2, warehouse.getLocation());
 
-            statement.setString(1, warehouse.getName());
-            statement.setString(2, warehouse.getLocation());
-            statement.executeUpdate();
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        warehouse.setWarehouseID(generatedKeys.getLong(1));
+                    }
+                }
+            }
         }
     }
 
-    public Warehouse getWarehouseById(Long id) throws SQLException {
-        String sql = "SELECT * FROM warehouse WHERE warehouseID = ?";
-        Warehouse warehouse = null;
+    public Warehouse getWarehouseById(Long warehouseId) throws SQLException {
+        String query = "SELECT * FROM Warehouse WHERE warehouseID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setLong(1, id);
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                warehouse = new Warehouse();
-                warehouse.setWarehouseID(resultSet.getLong("warehouseID"));
-                warehouse.setName(resultSet.getString("name"));
-                warehouse.setLocation(resultSet.getString("location"));
+            stmt.setLong(1, warehouseId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Warehouse warehouse = new Warehouse();
+                    warehouse.setWarehouseID(rs.getLong("warehouseID"));
+                    warehouse.setName(rs.getString("name"));
+                    warehouse.setLocation(rs.getString("location"));
+                    return warehouse;
+                }
             }
         }
-
-        return warehouse;
-    }
-
-    public List<Warehouse> getAllWarehouses() throws SQLException {
-        String sql = "SELECT * FROM warehouse";
-        List<Warehouse> warehouses = new ArrayList<>();
-
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet resultSet = statement.executeQuery()) {
-
-            while (resultSet.next()) {
-                Warehouse warehouse = new Warehouse();
-                warehouse.setWarehouseID(resultSet.getLong("warehouseID"));
-                warehouse.setName(resultSet.getString("name"));
-                warehouse.setLocation(resultSet.getString("location"));
-                warehouses.add(warehouse);
-            }
-        }
-
-        return warehouses;
+        return null;
     }
 
     public void updateWarehouse(Warehouse warehouse) throws SQLException {
-        String sql = "UPDATE warehouse SET name = ?, location = ? WHERE warehouseID = ?";
+        String query = "UPDATE Warehouse SET name = ?, location = ? WHERE warehouseID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setString(1, warehouse.getName());
-            statement.setString(2, warehouse.getLocation());
-            statement.setLong(3, warehouse.getWarehouseID());
-            statement.executeUpdate();
+            stmt.setString(1, warehouse.getName());
+            stmt.setString(2, warehouse.getLocation());
+            stmt.setLong(3, warehouse.getWarehouseID());
+            stmt.executeUpdate();
         }
     }
 
-    public void deleteWarehouse(Long id) throws SQLException {
-        String sql = "DELETE FROM warehouse WHERE warehouseID = ?";
+    public void deleteWarehouse(Long warehouseId) throws SQLException {
+        String query = "DELETE FROM Warehouse WHERE warehouseID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setLong(1, id);
-            statement.executeUpdate();
+            stmt.setLong(1, warehouseId);
+            stmt.executeUpdate();
         }
+    }
+
+    public List<Warehouse> getAllWarehouses() throws SQLException {
+        String query = "SELECT * FROM Warehouse";
+        List<Warehouse> warehouses = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
+                Warehouse warehouse = new Warehouse();
+                warehouse.setWarehouseID(rs.getLong("warehouseID"));
+                warehouse.setName(rs.getString("name"));
+                warehouse.setLocation(rs.getString("location"));
+                warehouses.add(warehouse);
+            }
+        }
+        return warehouses;
     }
 }
+

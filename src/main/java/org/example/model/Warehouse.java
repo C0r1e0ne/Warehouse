@@ -29,4 +29,13 @@ public class Warehouse {
     public void setLocation(String location) {
         this.location = location;
     }
+
+    @Override
+    public String toString() {
+        return "Warehouse{" +
+                "warehouseID=" + warehouseID +
+                ", name='" + name + '\'' +
+                ", location='" + location + '\'' +
+                '}';
+    }
 }
