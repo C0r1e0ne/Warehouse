@@ -1,14 +1,13 @@
 package org.example;
 
+import org.example.di.ApplicationContext;
 import org.example.interfaces.OperationRepository;
 import org.example.interfaces.ProductMovementRepository;
 import org.example.interfaces.ProductRepository;
 import org.example.interfaces.WarehouseRepository;
-import org.example.model.Product;
-import org.example.model.Warehouse;
-import org.example.model.Operation;
-import org.example.model.ProductMovement;
+import org.example.model.*;
 import org.example.repository.*;
+
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
@@ -16,13 +15,16 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        try {
-            // Создание репозиториев
-            ProductRepository productRepository = new ProductRepositoryImpl();
-            WarehouseRepository warehouseRepository = new WarehouseRepositoryImpl();
-            OperationRepository operationRepository = new OperationRepositoryImpl();
-            ProductMovementRepository productMovementRepository = new ProductMovementRepositoryImpl();
+        // Инициализируем контекст
+        ApplicationContext context = new ApplicationContext();
 
+        // Получаем репозитории из контекста
+        ProductRepository productRepository = context.getProductRepository();
+        WarehouseRepository warehouseRepository = context.getWarehouseRepository();
+        OperationRepository operationRepository = context.getOperationRepository();
+        ProductMovementRepository productMovementRepository = context.getProductMovementRepository();
+
+        try {
             // Операции с Product
             System.out.println("=== Product Operations ===");
 
@@ -50,8 +52,8 @@ public class Main {
             products.forEach(System.out::println);
 
             // 5. Удаление продукта
-            //productRepository.delete(fetchedProduct.getProductID());
-            //System.out.println("Product deleted: " + fetchedProduct.getProductID());
+//            productRepository.delete(fetchedProduct.getProductID());
+//            System.out.println("Product deleted: " + fetchedProduct.getProductID());
 
             // Операции с Warehouse
             System.out.println("=== Warehouse Operations ===");
@@ -72,7 +74,7 @@ public class Main {
 
             // 1. Создание новой операции
             Operation newOperation = new Operation();
-            newOperation.setOperationType(Operation.OperationType.приход); // Например, тип входной операции
+            newOperation.setOperationType(Operation.OperationType.приход);
             operationRepository.create(newOperation);
             System.out.println("Operation created: " + newOperation);
 
