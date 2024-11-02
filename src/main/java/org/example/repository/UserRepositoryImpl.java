@@ -34,7 +34,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Users findById(Long id) throws SQLException {
-        String sql = "SELECT * FROM users WHERE id = ?";
+        String sql = "SELECT * FROM users WHERE userid = ?";
         Users user = null;
 
         try (Connection connection = ConnectionPool.getConnection();
@@ -45,7 +45,7 @@ public class UserRepositoryImpl implements UserRepository {
 
             if (rs.next()) {
                 user = new Users();
-                user.setId(rs.getLong("id"));
+                user.setId(rs.getLong("userid"));
                 user.setName(rs.getString("name"));
                 user.setLogin(rs.getString("login"));
                 user.setPassword(rs.getString("password"));
@@ -65,7 +65,7 @@ public class UserRepositoryImpl implements UserRepository {
 
             while (rs.next()) {
                 Users user = new Users();
-                user.setId(rs.getLong("id"));
+                user.setId(rs.getLong("userid"));
                 user.setName(rs.getString("name"));
                 user.setLogin(rs.getString("login"));
                 user.setPassword(rs.getString("password"));
@@ -77,7 +77,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void update(Users user) throws SQLException {
-        String sql = "UPDATE users SET name = ?, login = ?, password = ? WHERE id = ?";
+        String sql = "UPDATE users SET name = ?, login = ?, password = ? WHERE userid = ?";
 
         try (Connection connection = ConnectionPool.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {

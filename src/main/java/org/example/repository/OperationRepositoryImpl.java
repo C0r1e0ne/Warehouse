@@ -71,7 +71,7 @@ public class OperationRepositoryImpl implements OperationRepository {
 
     @Override
     public void update(Operation operation) throws SQLException {
-        String sql = "UPDATE operation SET operationType = ? WHERE operationid = ?";
+        String sql = "UPDATE operation SET operationType = ?::operation_type WHERE operationid = ?";
 
         try (Connection connection = ConnectionPool.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
