@@ -1,5 +1,6 @@
 package org.example.model;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class ProductMovement {
@@ -9,7 +10,7 @@ public class ProductMovement {
     private Long warehouseID;
     private Long operationID;
     private double quantity;
-    private Date date;
+    private LocalDate date;
 
     public Long getMovementID() {
         return movementID;
@@ -51,11 +52,11 @@ public class ProductMovement {
         this.quantity = quantity;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
