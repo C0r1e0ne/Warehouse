@@ -11,4 +11,5 @@ public interface ProductMovementRepository {
     List<ProductMovement> findAll() throws SQLException;
     void update(ProductMovement movement) throws SQLException;
     void delete(Long id) throws SQLException;
+    List<ProductMovement> findByWarehouseId(Long warehouseId) throws SQLException;
 }

@@ -18,6 +18,7 @@ public class Main {
         OperationService operationService = context.getOperationService();
         ProductMovementService productMovementService = context.getProductMovementService();
         UserService userService = context.getUserService();
+        StatisticsService statisticsService = context.getStatisticsService();
 
         try {
             Product newProduct = new Product();
@@ -74,6 +75,18 @@ public class Main {
 
             userService.addUser(user);
             System.out.println("Created User: " + user);
+            Users userss = new Users();
+            List<Users> allUsers = userService.getAllUsers();
+            System.out.println(allUsers);
+            Users users = userService.getUserByLogin("aboba");
+            System.out.println("Created User: " + users);
+
+            Integer a = statisticsService.getOperationsCount();
+            System.out.println(a);
+            System.out.println(statisticsService.getOperationsCount());
+            System.out.println(statisticsService.getUsersCount());
+            List usersList = userService.searchUsers("johndoe",1,14);
+            System.out.println(usersList);
 
         } catch (SQLException e) {
             e.printStackTrace();

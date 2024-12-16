@@ -54,4 +54,16 @@ public class OperationServiceImpl implements OperationService {
         }
         operationRepository.delete(id);
     }
+
+    @Override
+    public List<Operation> getOperationsPaginated(int page, int size) throws SQLException {
+        int offset = (page - 1) * size;
+        return operationRepository.findPaginated(offset, size);
+    }
+
+    @Override
+    public int countOperations() throws SQLException {
+        return operationRepository.countAllRows();
+    }
+
 }

@@ -11,4 +11,6 @@ public interface WarehouseRepository {
     List<Warehouse> findAll() throws SQLException;
     void update(Warehouse warehouse) throws SQLException;
     void delete(Long id) throws SQLException;
+    List<Warehouse> findPaginated(int page, int size) throws SQLException;
+    int getTotalCount() throws SQLException;
 }

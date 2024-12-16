@@ -9,5 +9,7 @@ public interface WarehouseService {
     Warehouse getWarehouseById(Long id) throws SQLException;
     List<Warehouse> getAllWarehouses() throws SQLException;
     void updateWarehouse(Warehouse warehouse) throws SQLException;
-    void deleteWarehouse(Long id) throws SQLException;
+    boolean deleteWarehouse(Long id) throws SQLException;
+    List<Warehouse> getWarehousesPaginated(int page, int size) throws SQLException;
+    int getTotalWarehouseCount() throws SQLException;
 }

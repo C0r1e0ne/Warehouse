@@ -11,4 +11,6 @@ public interface OperationRepository {
     List<Operation> findAll() throws SQLException;
     void update(Operation operation) throws SQLException;
     void delete(Long id) throws SQLException;
+    int countAllRows() throws SQLException;
+    List<Operation> findPaginated(int offset, int limit) throws SQLException;
 }

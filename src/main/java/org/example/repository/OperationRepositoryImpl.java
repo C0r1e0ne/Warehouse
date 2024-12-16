@@ -70,6 +70,28 @@ public class OperationRepositoryImpl implements OperationRepository {
     }
 
     @Override
+    public List<Operation> findPaginated(int offset, int limit) throws SQLException {
+        String sql = "SELECT * FROM operation LIMIT ? OFFSET ?";
+        List<Operation> operations = new ArrayList<>();
+
+        try (Connection connection = ConnectionPool.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setInt(1, limit);
+            stmt.setInt(2, offset);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Operation operation = new Operation();
+                operation.setOperationID(rs.getLong("operationid"));
+                operation.setOperationType(Operation.OperationType.valueOf(rs.getString("operationType")));
+                operations.add(operation);
+            }
+        }
+        return operations;
+    }
+
+    @Override
     public void update(Operation operation) throws SQLException {
         String sql = "UPDATE operation SET operationType = ?::operation_type WHERE operationid = ?";
 
@@ -92,5 +114,21 @@ public class OperationRepositoryImpl implements OperationRepository {
             stmt.setLong(1, id);
             stmt.executeUpdate();
         }
+    }
+
+    @Override
+    public int countAllRows() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM operation";
+        int count = 0;
+
+        try (Connection connection = ConnectionPool.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        }
+        return count;
     }
 }

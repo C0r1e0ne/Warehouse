@@ -54,4 +54,34 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.delete(id);
     }
+    @Override
+    public Users getUserByLogin(String login) throws SQLException {
+        List<Users> users = userRepository.findAll();
+
+        for (Users user : users) {
+            if (user.getLogin().equals(login)) {
+                return user;
+            }
+        }
+        return null;
+    }
+    public List<Users> getUsersPaginated(int page, int size) throws SQLException {
+        int offset = (page - 1) * size;
+        return userRepository.findUsersPaginated(offset, size);
+    }
+
+    @Override
+    public int getTotalUserCount() throws SQLException {
+        return userRepository.getUserCount();
+    }
+    @Override
+    public List<Users> searchUsers(String query, int page, int pageSize) throws SQLException {
+        int offset = (page - 1) * pageSize;
+        return userRepository.searchUsers(query, offset, pageSize);
+    }
+
+    @Override
+    public int getTotalUserCount(String query, String filter) throws SQLException {
+        return userRepository.countFilteredUsers(query, filter);
+    }
 }

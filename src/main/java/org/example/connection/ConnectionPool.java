@@ -8,15 +8,20 @@ import java.util.List;
 
 public class ConnectionPool {
 
-    private static final String URL = "jdbc:postgresql://localhost:5432/Warehouse";
+    private static final String URL = "jdbc:postgresql://localhost:5432/warehouse1111";
     private static final String USER = "postgres";
     private static final String PASSWORD = "fdg233rfsd";
     private static final int INITIAL_POOL_SIZE = 5;
-    private static final int MAX_POOL_SIZE = 50;
+    private static final int MAX_POOL_SIZE = 150;
     private static final List<Connection> connectionPool = new ArrayList<>();
     private static final List<Connection> usedConnections = new ArrayList<>();
 
     static {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         try {
             for (int i = 0; i < INITIAL_POOL_SIZE; i++) {
                 connectionPool.add(createConnection());

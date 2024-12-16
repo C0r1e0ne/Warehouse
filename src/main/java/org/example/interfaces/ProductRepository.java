@@ -11,4 +11,8 @@ public interface ProductRepository {
     List<Product> findAll() throws SQLException;
     void update(Product product) throws SQLException;
     void delete(Long id) throws SQLException;
+    int getTotalProductCount() throws SQLException;
+    List<Product> getProductsPaginated(int page, int size) throws SQLException;
+    List<Product> filterProducts(double price, int quantity, int page, int size) throws SQLException;
+    int getFilteredProductCount(double price, int quantity) throws SQLException;
 }

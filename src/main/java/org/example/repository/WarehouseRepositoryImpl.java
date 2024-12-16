@@ -101,4 +101,44 @@ public class WarehouseRepositoryImpl implements WarehouseRepository {
             stmt.executeUpdate();
         }
     }
+    @Override
+    public List<Warehouse> findPaginated(int page, int size) throws SQLException {
+        String sql = "SELECT * FROM warehouse ORDER BY warehouseID ASC LIMIT ? OFFSET ?";
+        List<Warehouse> warehouses = new ArrayList<>();
+
+        try (Connection connection = ConnectionPool.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setInt(1, size);
+            stmt.setInt(2, (page - 1) * size); // OFFSET для пагинации
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Warehouse warehouse = new Warehouse();
+                    warehouse.setWarehouseID(rs.getLong("warehouseID"));
+                    warehouse.setName(rs.getString("name"));
+                    warehouse.setLocation(rs.getString("location"));
+                    warehouses.add(warehouse);
+                }
+            }
+        }
+        return warehouses;
+    }
+
+    @Override
+    public int getTotalCount() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM warehouse";
+        int totalCount = 0;
+
+        try (Connection connection = ConnectionPool.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                totalCount = rs.getInt(1);
+            }
+        }
+        return totalCount;
+    }
+
 }

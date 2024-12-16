@@ -11,11 +11,12 @@ public class ApplicationContext {
     private final ProductMovementRepository productMovementRepository;
     private final UserRepository userRepository;
 
-    private final ProductService productService;
-    private final WarehouseService warehouseService;
-    private final OperationService operationService;
-    private final ProductMovementService productMovementService;
-    private final UserService userService;
+    private final ProductServiceImpl productService;
+    private final WarehouseServiceImpl warehouseService;
+    private final OperationServiceImpl operationService;
+    private final ProductMovementServiceImpl productMovementService;
+    private final UserServiceImpl userService;
+    private final StatisticsServiceImpl statisticsService;
 
     public ApplicationContext() {
         this.productRepository = new ProductRepositoryImpl();
@@ -29,6 +30,8 @@ public class ApplicationContext {
         this.operationService = new OperationServiceImpl(this);
         this.productMovementService = new ProductMovementServiceImpl(this);
         this.userService = new UserServiceImpl(this);
+        this.statisticsService = new StatisticsServiceImpl(this);
+
     }
 
     public ProductRepository getProductRepository() {
@@ -51,23 +54,27 @@ public class ApplicationContext {
         return userRepository;
     }
 
-    public ProductService getProductService() {
+    public ProductServiceImpl getProductService() {
         return productService;
     }
 
-    public WarehouseService getWarehouseService() {
+    public WarehouseServiceImpl getWarehouseService() {
         return warehouseService;
     }
 
-    public OperationService getOperationService() {
+    public OperationServiceImpl getOperationService() {
         return operationService;
     }
 
-    public ProductMovementService getProductMovementService() {
+    public ProductMovementServiceImpl getProductMovementService() {
         return productMovementService;
     }
 
-    public UserService getUserService() {
+    public UserServiceImpl getUserService() {
         return userService;
+    }
+
+    public StatisticsServiceImpl getStatisticsService() {
+        return statisticsService;  // Возвращаем новый экземпляр StatisticsService
     }
 }

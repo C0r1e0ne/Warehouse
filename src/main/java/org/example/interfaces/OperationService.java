@@ -10,4 +10,6 @@ public interface OperationService {
     List<Operation> getAllOperations() throws SQLException;
     void updateOperation(Operation operation) throws SQLException;
     void deleteOperation(Long id) throws SQLException;
+    List<Operation> getOperationsPaginated(int page, int size) throws SQLException;
+    int countOperations() throws SQLException;
 }

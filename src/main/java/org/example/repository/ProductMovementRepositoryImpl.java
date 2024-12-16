@@ -21,7 +21,7 @@ public class ProductMovementRepositoryImpl implements ProductMovementRepository 
             stmt.setLong(2, movement.getWarehouseID());
             stmt.setLong(3, movement.getOperationID());
             stmt.setDouble(4, movement.getQuantity());
-            stmt.setDate(5, Date.valueOf(movement.getDate()));
+            stmt.setDate(5, Date.valueOf((movement.getDate())));
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows > 0) {
@@ -108,5 +108,29 @@ public class ProductMovementRepositoryImpl implements ProductMovementRepository 
             stmt.setLong(1, id);
             stmt.executeUpdate();
         }
+    }
+    @Override
+    public List<ProductMovement> findByWarehouseId(Long warehouseId) throws SQLException {
+        List<ProductMovement> productMovements = new ArrayList<>();
+        String sql = "SELECT * FROM productmovement WHERE warehouseid = ?";
+
+        try (Connection connection = ConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setLong(1, warehouseId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    ProductMovement movement = new ProductMovement();
+                    movement.setMovementID(resultSet.getLong("movementid"));
+                    movement.setWarehouseID(resultSet.getLong("warehouseid"));
+                    movement.setProductID(resultSet.getLong("productid"));
+                    movement.setQuantity(resultSet.getInt("quantity"));;
+                    movement.setDate(resultSet.getDate("date").toLocalDate());
+                    productMovements.add(movement);
+                }
+            }
+        }
+
+        return productMovements;
     }
 }

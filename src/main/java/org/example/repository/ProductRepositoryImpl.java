@@ -101,4 +101,92 @@ public class ProductRepositoryImpl implements ProductRepository {
             stmt.executeUpdate();
         }
     }
+
+    @Override
+    public int getTotalProductCount() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM product";
+        try (Connection connection = ConnectionPool.getConnection();
+             Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
+
+    // Новый метод для получения продуктов с пагинацией
+    @Override
+    public List<Product> getProductsPaginated(int page, int size) throws SQLException {
+        int offset = (page - 1) * size;
+        String sql = "SELECT * FROM product LIMIT ? OFFSET ?";
+
+        try (Connection connection = ConnectionPool.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setInt(1, size);
+            stmt.setInt(2, offset);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Product> products = new ArrayList<>();
+                while (rs.next()) {
+                    Product product = new Product();
+                    product.setProductID(rs.getLong("productid"));
+                    product.setName(rs.getString("name"));
+                    product.setPrice(rs.getDouble("price"));
+                    product.setQuantity(rs.getDouble("quantity"));
+                    products.add(product);
+                }
+                return products;
+            }
+        }
+    }
+    @Override
+    public List<Product> filterProducts(double price, int quantity, int page, int size) throws SQLException {
+        int offset = (page - 1) * size;
+        String sql = "SELECT * FROM product WHERE price <= ? AND quantity >= ? LIMIT ? OFFSET ?";
+
+        try (Connection connection = ConnectionPool.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setDouble(1, price);
+            stmt.setInt(2, quantity);
+            stmt.setInt(3, size);
+            stmt.setInt(4, offset);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Product> products = new ArrayList<>();
+                while (rs.next()) {
+                    Product product = new Product();
+                    product.setProductID(rs.getLong("productid"));
+                    product.setName(rs.getString("name"));
+                    product.setPrice(rs.getDouble("price"));
+                    product.setQuantity(rs.getDouble("quantity"));
+                    products.add(product);
+                }
+                return products;
+            }
+        }
+    }
+
+    @Override
+    public int getFilteredProductCount(double price, int quantity) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM product WHERE price <= ? AND quantity >= ?";
+
+        try (Connection connection = ConnectionPool.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setDouble(1, price);
+            stmt.setInt(2, quantity);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+        return 0;
+    }
+
 }
